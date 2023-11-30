@@ -18,6 +18,17 @@ import {
 import { IconEdit } from "@tabler/icons-react";
 import classes from "./index.module.css";
 import Link from "next/link";
+import { useEffect } from "react";
+import VehicleMakeService from "@/services/VehicleMakeService";
+
+// const fetchData = async () => {
+//   try {
+//     const makeData = await VehicleMakeService.get();
+//     console.log(makeData);
+//   } catch (error) {
+//     console.error("Error fetching data:", error);
+//   }
+// };
 
 const mockdata = [
   {
@@ -88,6 +99,19 @@ const mockdata = [
 ];
 
 export default function Cars() {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const makeData = await VehicleMakeService.get();
+        console.log(makeData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const renderCards = () => {
     return mockdata.map((data, index) => {
       const { image, title, description, country } = data;
