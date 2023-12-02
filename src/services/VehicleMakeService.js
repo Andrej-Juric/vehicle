@@ -7,7 +7,7 @@ export default class VehicleMakeService {
     console.log(this.apiUrl);
     return await httpClient.get(this.apiUrl);
   }
-  async getById(id) {
+  static async getById(id) {
     return await httpClient.get(`${this.apiUrl}/${id}`);
   }
 

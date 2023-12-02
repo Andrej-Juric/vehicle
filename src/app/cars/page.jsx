@@ -18,36 +18,72 @@ import classes from "./index.module.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import VehicleMakeService from "@/services/VehicleMakeService";
+import VehicleModelService from "@/services/VehicleModelService";
 
 export default function Cars() {
   const [makes, setMakes] = useState([]);
+  const [models, setModels] = useState([]);
   const [selectedMake, setSelectedMake] = useState(null);
+  const [selectedModel, setSelectedModel] = useState(null);
   const [filteredMakes, setFilteredMakes] = useState([]);
 
-  // console.log(makes, "makes");
+  // console.log(
+  //   makes,
+  //   "makes",
+  //   models,
+  //   "models",
+  //   selectedMake,
+  //   "selectedMake",
+  //   filteredMakes,
+  //   "filteredMakes"
+  // );
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const makeData = await VehicleMakeService.get();
-        // console.log(makeData, "makeData");
         setMakes(makeData.item);
         setFilteredMakes(makeData.item);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching makes data:", error);
       }
     };
 
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        if (selectedMake) {
+          const modelData = await VehicleModelService.getByMakeId(selectedMake);
+          console.log(modelData, "modeldata u useeffectu");
+          setModels(modelData.item);
+        }
+      } catch (error) {
+        console.error("Error fetching models data:", error);
+      }
+    };
+
+    fetchModels();
+  }, [selectedMake]);
+
   const handleSearch = () => {
+    let filteredItems = makes;
+
     if (selectedMake) {
-      const filteredCars = makes.filter((car) => car.name === selectedMake);
-      setFilteredMakes(filteredCars);
-    } else {
-      setFilteredMakes(makes);
-      console.log("ne valja");
+      filteredItems = models.filter(
+        (model) => model.makeId === selectedMake.value
+      );
     }
+
+    if (selectedModel) {
+      filteredItems = filteredItems.filter(
+        (item) => item.id === selectedModel.value
+      );
+    }
+
+    setFilteredMakes(filteredItems);
   };
 
   const renderCards = (make) => {
@@ -97,7 +133,7 @@ export default function Cars() {
         <Select
           label="Choose makes"
           placeholder="Pick car"
-          data={makes.map((make) => ({ label: make.name, value: make.name }))}
+          data={makes.map((make) => ({ label: make.name, value: make.id }))}
           searchable
           style={{ width: 200 }}
           onChange={(selected) => setSelectedMake(selected)}
@@ -105,8 +141,15 @@ export default function Cars() {
         <Select
           label="Choose models"
           placeholder="Pick model"
-          data={["React", "Angular", "Vue", "Svelte"]}
+          data={
+            models &&
+            models.map((model) => ({
+              label: model.name,
+              value: model.id,
+            }))
+          }
           style={{ width: 200 }}
+          onChange={(selected) => setSelectedModel(selected)}
         />
         <Select
           label="Engine/Fuel type"
