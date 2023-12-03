@@ -10,6 +10,9 @@ export default class VehicleModelService {
   static async search(makeId) {
     return await httpClient.get(`${this.apiUrl}?searchQuery=${makeId}`);
   }
+  // static async searchFuelType(fuelType) {
+  //   return await httpClient.get(`${this.apiUrl}?fuel_type=${fuelType}`);
+  // }
 
   async create(makeData) {
     return await httpClient.post(this.apiUrl, makeData);

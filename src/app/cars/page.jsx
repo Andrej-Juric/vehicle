@@ -26,23 +26,9 @@ export default function Cars() {
   const [selectedMake, setSelectedMake] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [filteredMakes, setFilteredMakes] = useState([]);
-  const [filteredModels, setFilteredModels] = useState([]);
-  console.log(selectedMake, selectedModel, "selektirani make i model");
-  console.log(makes, models, "models");
-
-  let modelId = models.map((model) => model.id === selectedModel);
-  console.log(modelId, "Modelid");
-
-  // console.log(
-  //   makes,
-  //   "makes",
-  //   models,
-  //   "models",
-  //   selectedMake,
-  //   "selectedMake",
-  //   filteredMakes,
-  //   "filteredMakes"
-  // );
+  const [fuelTypes, setFuelTypes] = useState([]);
+  const [wheelTypes, setWheelTypes] = useState([]);
+  console.log(selectedModel, "selected model");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +51,11 @@ export default function Cars() {
           const modelData = await VehicleModelService.search(selectedMake);
           console.log(modelData, "modeldata u useeffectu");
           setModels(modelData.item);
+          // const allFuelTypes = modelData.item.map((model) => model.fuel_type);
+          // const allWheelTypes = modelData.item.map((model) => model.wheel_type);
+
+          // setFuelTypes(allFuelTypes);
+          // setWheelTypes(allWheelTypes);
         }
       } catch (error) {
         console.error("Error fetching models data:", error);
@@ -74,27 +65,6 @@ export default function Cars() {
     fetchModels();
   }, [selectedMake, selectedModel]);
 
-  // const handleSearch = () => {
-  //   if (!selectedMake) {
-  //     setFilteredMakes(models);
-  //     return;
-  //   }
-
-  //   let filteredItems = models;
-
-  //   if (selectedModel) {
-  //     // ako sam odabrao model, filtriraj modele prema odabranoj marki i modelu
-  //     let filteredItems = models.filter(
-  //       (model) => model.id === selectedModel && model.makeId === selectedMake
-  //     );
-  //   } else {
-  //     // ako nisam odabrao model, filtriraj modele samo prema odabranoj marki
-  //     let filteredItems = models.filter(
-  //       (model) => model.makeId === selectedMake
-  //     );
-  //   }
-  //   setFilteredMakes(filteredItems);
-  // };
   const handleSearch = () => {
     if (!selectedMake) {
       setFilteredMakes(models);
@@ -137,7 +107,7 @@ export default function Cars() {
         </Card.Section>
 
         <Group mt="xs">
-          <Link href={`/singleCar/${selectedModel && selectedModel.value}`}>
+          <Link href={`/cars/${selectedModel || make.id}`}>
             <Button radius="md" style={{ flex: 1 }}>
               Show details
             </Button>
@@ -187,14 +157,33 @@ export default function Cars() {
         <Select
           label="Engine/Fuel type"
           placeholder="Pick model"
-          data={["React", "Angular", "Vue", "Svelte"]}
+          // data={
+          //   models &&
+          //   models.map((model) => ({
+          //     label: model.fuel_type,
+          //     value: model.id,
+          //   }))
+          // }
+          data={selectedModel && { label: selectedMake }}
           style={{ width: 200 }}
+          value={fuelTypes}
+          onChange={setFuelTypes}
+          clearable
+          searchable
         />
         <Select
           label="Wheel type"
           placeholder="Pick model"
-          data={["React", "Angular", "Vue", "Svelte"]}
+          data={
+            models &&
+            models.map((model) => ({
+              label: model.wheel_type,
+              value: model.id,
+            }))
+          }
           style={{ width: 200 }}
+          value={wheelTypes}
+          onChange={setWheelTypes}
         />
         <Select
           label="Sort by name"
