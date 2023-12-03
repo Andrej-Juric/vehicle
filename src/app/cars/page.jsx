@@ -26,6 +26,12 @@ export default function Cars() {
   const [selectedMake, setSelectedMake] = useState(null);
   const [selectedModel, setSelectedModel] = useState(null);
   const [filteredMakes, setFilteredMakes] = useState([]);
+  const [filteredModels, setFilteredModels] = useState([]);
+  console.log(selectedMake, selectedModel, "selektirani make i model");
+  console.log(makes, models, "models");
+
+  let modelId = models.map((model) => model.id === selectedModel);
+  console.log(modelId, "Modelid");
 
   // console.log(
   //   makes,
@@ -50,13 +56,13 @@ export default function Cars() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedMake, selectedModel]);
 
   useEffect(() => {
     const fetchModels = async () => {
       try {
         if (selectedMake) {
-          const modelData = await VehicleModelService.getByMakeId(selectedMake);
+          const modelData = await VehicleModelService.search(selectedMake);
           console.log(modelData, "modeldata u useeffectu");
           setModels(modelData.item);
         }
@@ -66,21 +72,43 @@ export default function Cars() {
     };
 
     fetchModels();
-  }, [selectedMake]);
+  }, [selectedMake, selectedModel]);
 
+  // const handleSearch = () => {
+  //   if (!selectedMake) {
+  //     setFilteredMakes(models);
+  //     return;
+  //   }
+
+  //   let filteredItems = models;
+
+  //   if (selectedModel) {
+  //     // ako sam odabrao model, filtriraj modele prema odabranoj marki i modelu
+  //     let filteredItems = models.filter(
+  //       (model) => model.id === selectedModel && model.makeId === selectedMake
+  //     );
+  //   } else {
+  //     // ako nisam odabrao model, filtriraj modele samo prema odabranoj marki
+  //     let filteredItems = models.filter(
+  //       (model) => model.makeId === selectedMake
+  //     );
+  //   }
+  //   setFilteredMakes(filteredItems);
+  // };
   const handleSearch = () => {
-    let filteredItems = makes;
-
-    if (selectedMake) {
-      filteredItems = models.filter(
-        (model) => model.makeId === selectedMake.value
-      );
+    if (!selectedMake) {
+      setFilteredMakes(models);
+      return;
     }
 
+    let filteredItems = models;
+
     if (selectedModel) {
-      filteredItems = filteredItems.filter(
-        (item) => item.id === selectedModel.value
+      filteredItems = models.filter(
+        (model) => model.id === selectedModel && model.makeId === selectedMake
       );
+    } else {
+      filteredItems = models.filter((model) => model.makeId === selectedMake);
     }
 
     setFilteredMakes(filteredItems);
@@ -109,7 +137,7 @@ export default function Cars() {
         </Card.Section>
 
         <Group mt="xs">
-          <Link href="/singleCar">
+          <Link href={`/singleCar/${selectedModel && selectedModel.value}`}>
             <Button radius="md" style={{ flex: 1 }}>
               Show details
             </Button>
@@ -134,9 +162,11 @@ export default function Cars() {
           label="Choose makes"
           placeholder="Pick car"
           data={makes.map((make) => ({ label: make.name, value: make.id }))}
-          searchable
           style={{ width: 200 }}
-          onChange={(selected) => setSelectedMake(selected)}
+          value={selectedMake}
+          onChange={setSelectedMake}
+          clearable
+          searchable
         />
         <Select
           label="Choose models"
@@ -149,7 +179,10 @@ export default function Cars() {
             }))
           }
           style={{ width: 200 }}
-          onChange={(selected) => setSelectedModel(selected)}
+          value={selectedModel}
+          onChange={setSelectedModel}
+          clearable
+          searchable
         />
         <Select
           label="Engine/Fuel type"

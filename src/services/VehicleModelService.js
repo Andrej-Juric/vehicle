@@ -7,8 +7,8 @@ export default class VehicleModelService {
     console.log(this.apiUrl);
     return await httpClient.get(this.apiUrl);
   }
-  static async getByMakeId(makeId) {
-    return await httpClient.get(`${this.apiUrl}/${makeId}`);
+  static async search(makeId) {
+    return await httpClient.get(`${this.apiUrl}?searchQuery=${makeId}`);
   }
 
   async create(makeData) {
