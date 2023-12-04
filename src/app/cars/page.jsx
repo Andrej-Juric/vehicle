@@ -27,35 +27,93 @@ export default function Cars() {
   const [selectedModel, setSelectedModel] = useState(null);
   const [filteredMakes, setFilteredMakes] = useState([]);
   const [fuelTypes, setFuelTypes] = useState([]);
+  const [selectedFuelType, setSelectedFuelType] = useState();
   const [wheelTypes, setWheelTypes] = useState([]);
-  console.log(selectedModel, "selected model");
+  const [selectedWheelType, setSelectedWheelType] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(4);
+  const [totalPages, setTotalPages] = useState(3);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const makeData = await VehicleMakeService.get();
+  //       setMakes(makeData.item);
+  //     } catch (error) {
+  //       console.error("Error fetching makes data:", error);
+  //     }
+  //     setFilteredMakes(makeData.item);
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const makeData = await VehicleMakeService.get();
-        setMakes(makeData.item);
-        setFilteredMakes(makeData.item);
+        const modelData = await VehicleModelService.get();
+        setModels(modelData.item);
+        if (modelData) {
+          let fuelTyps = [];
+          let wheelTyps = [];
+          modelData.item.forEach((data) => {
+            if (!fuelTyps.includes(data.fuel_type)) {
+              fuelTyps.push(data.fuel_type);
+            }
+
+            if (!wheelTyps.includes(data.wheel_type)) {
+              wheelTyps.push(data.wheel_type);
+            }
+          });
+
+          if (fuelTyps) {
+            setFuelTypes(fuelTyps);
+          }
+
+          if (wheelTyps) {
+            setWheelTypes(wheelTyps);
+          }
+        }
       } catch (error) {
         console.error("Error fetching makes data:", error);
       }
     };
 
     fetchData();
-  }, [selectedMake, selectedModel]);
+  }, [makes]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const pagination = await VehicleMakeService.pagination(
+          currentPage,
+          itemsPerPage
+        );
+        console.log(pagination, "pagination");
+        setMakes(pagination.item);
+        setFilteredMakes(pagination.item);
+        setCurrentPage(currentPage);
+        setTotalPages(pagination.totalPages);
+      } catch (error) {
+        console.error("Error fetching makes data:", error);
+        setCurrentPage(pageNumber);
+      }
+    };
+    fetchData();
+  }, [currentPage]);
 
   useEffect(() => {
     const fetchModels = async () => {
       try {
         if (selectedMake) {
-          const modelData = await VehicleModelService.search(selectedMake);
-          console.log(modelData, "modeldata u useeffectu");
-          setModels(modelData.item);
-          // const allFuelTypes = modelData.item.map((model) => model.fuel_type);
-          // const allWheelTypes = modelData.item.map((model) => model.wheel_type);
+          console.log(selectedMake, "selectedMake");
 
-          // setFuelTypes(allFuelTypes);
-          // setWheelTypes(allWheelTypes);
+          const modelData = await VehicleModelService.search(selectedMake);
+          setModels(modelData.item);
+          console.log(models);
+        } else {
+          const modelData = await VehicleModelService.get();
+          setModels(modelData.item);
         }
       } catch (error) {
         console.error("Error fetching models data:", error);
@@ -65,20 +123,33 @@ export default function Cars() {
     fetchModels();
   }, [selectedMake, selectedModel]);
 
+  useEffect(() => {
+    handleSearch();
+  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
+
   const handleSearch = () => {
-    if (!selectedMake) {
-      setFilteredMakes(models);
-      return;
-    }
-
     let filteredItems = models;
-
-    if (selectedModel) {
+    if (selectedMake) {
       filteredItems = models.filter(
-        (model) => model.id === selectedModel && model.makeId === selectedMake
+        (model) =>
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedMake || model.makeId === selectedMake) &&
+          (!selectedModel || model.id === selectedModel) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
+      );
+    } else if (models && (selectedFuelType || selectedWheelType)) {
+      filteredItems = models.filter(
+        (model) =>
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
       );
     } else {
-      filteredItems = models.filter((model) => model.makeId === selectedMake);
+      filteredItems = makes;
+      console.log(makes, "makes");
     }
 
     setFilteredMakes(filteredItems);
@@ -143,10 +214,13 @@ export default function Cars() {
           placeholder="Pick model"
           data={
             models &&
-            models.map((model) => ({
-              label: model.name,
-              value: model.id,
-            }))
+            selectedMake &&
+            models
+              .filter((model) => !selectedMake || model.makeId === selectedMake)
+              .map((model) => ({
+                label: model.name,
+                value: model.id,
+              }))
           }
           style={{ width: 200 }}
           value={selectedModel}
@@ -157,17 +231,16 @@ export default function Cars() {
         <Select
           label="Engine/Fuel type"
           placeholder="Pick model"
-          // data={
-          //   models &&
-          //   models.map((model) => ({
-          //     label: model.fuel_type,
-          //     value: model.id,
-          //   }))
-          // }
-          data={selectedModel && { label: selectedMake }}
+          data={
+            fuelTypes &&
+            fuelTypes.map((model, index) => ({
+              label: model,
+              value: String(index),
+            }))
+          }
           style={{ width: 200 }}
-          value={fuelTypes}
-          onChange={setFuelTypes}
+          value={selectedFuelType}
+          onChange={setSelectedFuelType}
           clearable
           searchable
         />
@@ -175,22 +248,18 @@ export default function Cars() {
           label="Wheel type"
           placeholder="Pick model"
           data={
-            models &&
-            models.map((model) => ({
-              label: model.wheel_type,
-              value: model.id,
+            wheelTypes &&
+            wheelTypes.map((model, index) => ({
+              label: model,
+              value: String(index),
             }))
           }
           style={{ width: 200 }}
-          value={wheelTypes}
-          onChange={setWheelTypes}
+          value={selectedWheelType}
+          onChange={setSelectedWheelType}
+          clearable
         />
-        <Select
-          label="Sort by name"
-          placeholder="Pick model"
-          data={["React", "Angular", "Vue", "Svelte"]}
-          style={{ width: 200 }}
-        />
+
         <Button onClick={handleSearch} style={{ marginTop: 25 }}>
           Search
         </Button>
@@ -219,7 +288,12 @@ export default function Cars() {
         gap={{ base: "sm", sm: "lg" }}
         justify={{ sm: "center" }}
       >
-        <Pagination total={5} radius="md" />
+        <Pagination
+          value={currentPage}
+          onChange={setCurrentPage}
+          total={5}
+          radius="md"
+        />
       </Flex>
     </>
   );

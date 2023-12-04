@@ -7,6 +7,11 @@ export default class VehicleMakeService {
     console.log(this.apiUrl);
     return await httpClient.get(this.apiUrl);
   }
+  static async pagination(pageNumber, itemsPerPage) {
+    return await httpClient.get(
+      `${this.apiUrl}?page=${pageNumber}&rpp=${itemsPerPage}`
+    );
+  }
   static async getById(id) {
     return await httpClient.get(`${this.apiUrl}/${id}`);
   }
