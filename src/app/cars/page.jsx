@@ -34,19 +34,19 @@ export default function Cars() {
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [totalPages, setTotalPages] = useState(3);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const makeData = await VehicleMakeService.get();
-  //       setMakes(makeData.item);
-  //     } catch (error) {
-  //       console.error("Error fetching makes data:", error);
-  //     }
-  //     setFilteredMakes(makeData.item);
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const makeData = await VehicleMakeService.get();
+        setMakes(makeData.item);
+      } catch (error) {
+        console.error("Error fetching makes data:", error);
+      }
+      setFilteredMakes(makeData.item);
+    };
 
-  //   fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +90,7 @@ export default function Cars() {
           itemsPerPage
         );
         console.log(pagination, "pagination");
-        setMakes(pagination.item);
+        // setMakes(pagination.item);
         setFilteredMakes(pagination.item);
         setCurrentPage(currentPage);
         setTotalPages(pagination.totalPages);

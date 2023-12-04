@@ -61,10 +61,12 @@ export default function Makes() {
       <Table.Td>
         <Group gap={5}>
           <ActionIcon variant="subtle" color="gray">
-            <IconPencil
-              style={{ width: rem(16), height: rem(16) }}
-              stroke={1.5}
-            />
+            <Link href={`/cars/edit/${item.id}`}>
+              <IconPencil
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.5}
+              />
+            </Link>
           </ActionIcon>
           <ActionIcon variant="subtle" color="red">
             <IconTrash
