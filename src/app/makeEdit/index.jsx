@@ -58,7 +58,7 @@ export default function MakesEdit() {
         <TextInput mt="md" label="Abreviation" placeholder="Abrv" />
         <Group justify="center" mt="xl">
           <Button color="teal">Save</Button>
-          <Link href="/cars">
+          <Link href="/makes">
             <Button color="red">Cancel</Button>
           </Link>
         </Group>

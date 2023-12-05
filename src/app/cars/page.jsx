@@ -155,7 +155,7 @@ export default function Cars() {
     setFilteredMakes(filteredItems);
   };
 
-  const renderCards = (make) => {
+  const renderCards = (make, model) => {
     const { name, id } = make;
 
     return (
@@ -183,9 +183,14 @@ export default function Cars() {
               Show details
             </Button>
           </Link>
-          <ActionIcon variant="default" radius="md" size={36}>
-            <IconEdit className={classes.like} stroke={1.5} />
-          </ActionIcon>
+
+          {selectedMake && (
+            <ActionIcon variant="default" radius="md" size={36}>
+              <Link href={`/cars/${selectedModel || make.id}/edit`}>
+                <IconEdit className={classes.like} stroke={1.5} />
+              </Link>
+            </ActionIcon>
+          )}
         </Group>
       </Card>
     );
