@@ -19,6 +19,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import VehicleMakeService from "@/services/VehicleMakeService";
 import VehicleModelService from "@/services/VehicleModelService";
+import { FilterProvider, useFilter } from "../../context/FilterContext";
+import FilterBar from "@/components/filter-bar/FilterBar";
 
 export default function Cars() {
   const [makes, setMakes] = useState([]);
@@ -149,13 +151,12 @@ export default function Cars() {
       );
     } else {
       filteredItems = makes;
-      console.log(makes, "makes");
     }
 
     setFilteredMakes(filteredItems);
   };
 
-  const renderCards = (make, model) => {
+  const renderCards = (make) => {
     const { name, id } = make;
 
     return (
