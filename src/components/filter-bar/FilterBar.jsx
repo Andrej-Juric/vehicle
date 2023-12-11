@@ -1,24 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFilter, FilterProvider } from "../../context/FilterContext";
 import { Select, Button } from "@mantine/core";
 import Link from "next/link";
 
-export default function FilterBar({}) {
-  const {
-    makes,
-    models,
-    selectedMake,
-    setSelectedMake,
-    selectedModel,
-    setSelectedModel,
-    selectedFuelType,
-    setSelectedFuelType,
-    selectedWheelType,
-    setSelectedWheelType,
-    fuelTypes,
-    wheelTypes,
-    handleSearch,
-  } = useFilter();
+export default function FilterBar({ makes, models }) {
+  const { filter, setFilter, handleSearch, fuelTypes, wheelTypes } =
+    useFilter();
+
+  const { selectedMake, selectedModel, selectedFuelType, selectedWheelType } =
+    filter;
+
+  useEffect(() => {
+    handleSearch();
+  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
 
   return (
     <div>
@@ -28,7 +22,8 @@ export default function FilterBar({}) {
         data={makes.map((make) => ({ label: make.name, value: make.id }))}
         style={{ width: 200 }}
         value={selectedMake}
-        onChange={setSelectedMake}
+        // onChange={setSelectedMake}
+        onChange={setFilter}
         clearable
         searchable
       />
@@ -47,7 +42,7 @@ export default function FilterBar({}) {
         }
         style={{ width: 200 }}
         value={selectedModel}
-        onChange={setSelectedModel}
+        // onChange={setSelectedModel}
         clearable
         searchable
       />
@@ -63,7 +58,7 @@ export default function FilterBar({}) {
         }
         style={{ width: 200 }}
         value={selectedFuelType}
-        onChange={setSelectedFuelType}
+        // onChange={setSelectedFuelType}
         clearable
         searchable
       />
@@ -79,7 +74,7 @@ export default function FilterBar({}) {
         }
         style={{ width: 200 }}
         value={selectedWheelType}
-        onChange={setSelectedWheelType}
+        // onChange={setSelectedWheelType}
         clearable
         searchable
       />

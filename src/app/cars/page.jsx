@@ -198,8 +198,8 @@ export default function Cars() {
   };
 
   return (
-    <>
-      <Flex
+    <FilterProvider>
+      {/* <Flex
         direction={{ base: "column", sm: "row" }}
         gap={{ base: "sm", sm: "lg" }}
         justify={{ sm: "center" }}
@@ -272,9 +272,16 @@ export default function Cars() {
         <Link href="/models/create">
           <Button style={{ marginTop: 25 }}>New model</Button>
         </Link>
-      </Flex>
+      </Flex> */}
 
       <Space h="xl" />
+      <FilterBar
+        onChange={(value) => console.log(value)}
+        makes={makes}
+        models={models}
+        fuelTypes={fuelTypes}
+        wheelTypes={wheelTypes}
+      ></FilterBar>
 
       <Divider my="sm" />
 
@@ -301,6 +308,6 @@ export default function Cars() {
           radius="md"
         />
       </Flex>
-    </>
+    </FilterProvider>
   );
 }
