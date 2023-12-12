@@ -1,18 +1,71 @@
-import React, { useEffect } from "react";
-import { useFilter, FilterProvider } from "../../context/FilterContext";
+import React, { useContext, useEffect, useState } from "react";
+import { FilterContext, useFilter } from "../../context/FilterContext";
 import { Select, Button } from "@mantine/core";
 import Link from "next/link";
 
-export default function FilterBar({ makes, models }) {
-  const { filter, setFilter, handleSearch, fuelTypes, wheelTypes } =
-    useFilter();
+export default function FilterBar({
+  makes,
+  models,
+  fuelTypes,
+  wheelTypes,
+  filteredMakes,
+}) {
+  const { filter, setFilter } = useFilter();
 
-  const { selectedMake, selectedModel, selectedFuelType, selectedWheelType } =
-    filter;
+  const [selectedMake, setSelectedMake] = useState(filter.selectedMake);
+  const [selectedModel, setSelectedModel] = useState(filter.selectedModel);
+  const [selectedFuelType, setSelectedFuelType] = useState(
+    filter.selectedFuelType
+  );
+  const [selectedWheelType, setSelectedWheelType] = useState(
+    filter.selectedWheelType
+  );
+  console.log(filteredMakes);
 
   useEffect(() => {
-    handleSearch();
-  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
+    setSelectedMake(filter.selectedMake);
+    setSelectedModel(filter.selectedModel);
+    setSelectedFuelType(filter.selectedFuelType);
+    setSelectedWheelType(filter.selectedWheelType);
+  }, [
+    filter.selectedMake,
+    filter.selectedModel,
+    filter.selectedFuelType,
+    filter.selectedWheelType,
+  ]);
+  const handleSearch = () => {
+    let filteredItems = filter.models;
+
+    if (filter.selectedMake) {
+      filteredItems = filter.models.filter(
+        (model) =>
+          (!filter.selectedFuelType ||
+            model.fuel_type === filter.fuelTypes[filter.selectedFuelType]) &&
+          (!filter.selectedMake || model.makeId === filter.selectedMake) &&
+          (!filter.selectedModel || model.id === filter.selectedModel) &&
+          (!filter.selectedWheelType ||
+            model.wheel_type === filter.wheelTypes[filter.selectedWheelType])
+      );
+    } else if (
+      filter.models &&
+      (filter.selectedFuelType || filter.selectedWheelType)
+    ) {
+      filteredItems = filter.models.filter(
+        (model) =>
+          (!filter.selectedFuelType ||
+            model.fuel_type === filter.fuelTypes[filter.selectedFuelType]) &&
+          (!filter.selectedWheelType ||
+            model.wheel_type === filter.wheelTypes[filter.selectedWheelType])
+      );
+    } else {
+      filteredItems = filter.makes;
+    }
+
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      filteredMakes: filteredItems,
+    }));
+  };
 
   return (
     <div>
@@ -22,8 +75,7 @@ export default function FilterBar({ makes, models }) {
         data={makes.map((make) => ({ label: make.name, value: make.id }))}
         style={{ width: 200 }}
         value={selectedMake}
-        // onChange={setSelectedMake}
-        onChange={setFilter}
+        onChange={(value) => setSelectedMake(value)}
         clearable
         searchable
       />
@@ -42,7 +94,7 @@ export default function FilterBar({ makes, models }) {
         }
         style={{ width: 200 }}
         value={selectedModel}
-        // onChange={setSelectedModel}
+        onChange={(value) => setSelectedModel(value)}
         clearable
         searchable
       />
@@ -58,7 +110,7 @@ export default function FilterBar({ makes, models }) {
         }
         style={{ width: 200 }}
         value={selectedFuelType}
-        // onChange={setSelectedFuelType}
+        onChange={(value) => setSelectedFuelType(value)}
         clearable
         searchable
       />
@@ -74,7 +126,7 @@ export default function FilterBar({ makes, models }) {
         }
         style={{ width: 200 }}
         value={selectedWheelType}
-        // onChange={setSelectedWheelType}
+        onChange={(value) => setSelectedWheelType(value)}
         clearable
         searchable
       />

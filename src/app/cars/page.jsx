@@ -125,36 +125,36 @@ export default function Cars() {
     fetchModels();
   }, [selectedMake, selectedModel]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
 
-  const handleSearch = () => {
-    let filteredItems = models;
-    if (selectedMake) {
-      filteredItems = models.filter(
-        (model) =>
-          (!selectedFuelType ||
-            model.fuel_type === fuelTypes[selectedFuelType]) &&
-          (!selectedMake || model.makeId === selectedMake) &&
-          (!selectedModel || model.id === selectedModel) &&
-          (!selectedWheelType ||
-            model.wheel_type === wheelTypes[selectedWheelType])
-      );
-    } else if (models && (selectedFuelType || selectedWheelType)) {
-      filteredItems = models.filter(
-        (model) =>
-          (!selectedFuelType ||
-            model.fuel_type === fuelTypes[selectedFuelType]) &&
-          (!selectedWheelType ||
-            model.wheel_type === wheelTypes[selectedWheelType])
-      );
-    } else {
-      filteredItems = makes;
-    }
+  // const handleSearch = () => {
+  //   let filteredItems = models;
+  //   if (selectedMake) {
+  //     filteredItems = models.filter(
+  //       (model) =>
+  //         (!selectedFuelType ||
+  //           model.fuel_type === fuelTypes[selectedFuelType]) &&
+  //         (!selectedMake || model.makeId === selectedMake) &&
+  //         (!selectedModel || model.id === selectedModel) &&
+  //         (!selectedWheelType ||
+  //           model.wheel_type === wheelTypes[selectedWheelType])
+  //     );
+  //   } else if (models && (selectedFuelType || selectedWheelType)) {
+  //     filteredItems = models.filter(
+  //       (model) =>
+  //         (!selectedFuelType ||
+  //           model.fuel_type === fuelTypes[selectedFuelType]) &&
+  //         (!selectedWheelType ||
+  //           model.wheel_type === wheelTypes[selectedWheelType])
+  //     );
+  //   } else {
+  //     filteredItems = makes;
+  //   }
 
-    setFilteredMakes(filteredItems);
-  };
+  //   setFilteredMakes(filteredItems);
+  // };
 
   const renderCards = (make) => {
     const { name, id } = make;
@@ -276,11 +276,12 @@ export default function Cars() {
 
       <Space h="xl" />
       <FilterBar
-        onChange={(value) => console.log(value)}
+        // onChange={(value) => console.log(value)}
         makes={makes}
         models={models}
         fuelTypes={fuelTypes}
         wheelTypes={wheelTypes}
+        filteredMakes={filteredMakes}
       ></FilterBar>
 
       <Divider my="sm" />
