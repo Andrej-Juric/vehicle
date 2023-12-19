@@ -20,32 +20,9 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 const Makes = observer(() => {
-  // const [makes, setMakes] = React.useState([]);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [itemsPerPage, setItemsPerPage] = useState(4);
-  // const [totalPages, setTotalPages] = useState(3);
-
   useEffect(() => {
     makesStore.fetchPaginatedMakes();
   }, [makesStore.currentPage]);
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const pagination = await VehicleMakeService.pagination(
-  //         currentPage,
-  //         itemsPerPage
-  //       );
-  //       setMakes(pagination.item);
-  //       setCurrentPage(currentPage);
-  //       setTotalPages(pagination.totalPages);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [currentPage]);
 
   const rows = makesStore.filteredMakes.map((item) => (
     <Table.Tr key={item.name}>
