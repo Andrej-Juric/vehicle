@@ -1,5 +1,7 @@
 "use client";
 import VehicleMakeService from "@/services/VehicleMakeService";
+import makesStore from "@/stores/MakesStore";
+import { useObserver, observer } from "mobx-react";
 import {
   Avatar,
   Table,
@@ -17,31 +19,35 @@ import { IconPencil, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-export default function Makes() {
-  const [makes, setMakes] = React.useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [totalPages, setTotalPages] = useState(3);
+const Makes = observer(() => {
+  // const [makes, setMakes] = React.useState([]);
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [itemsPerPage, setItemsPerPage] = useState(4);
+  // const [totalPages, setTotalPages] = useState(3);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const pagination = await VehicleMakeService.pagination(
-          currentPage,
-          itemsPerPage
-        );
-        setMakes(pagination.item);
-        setCurrentPage(currentPage);
-        setTotalPages(pagination.totalPages);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+    makesStore.fetchPaginatedMakes();
+  }, [makesStore.currentPage]);
 
-    fetchData();
-  }, [currentPage]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const pagination = await VehicleMakeService.pagination(
+  //         currentPage,
+  //         itemsPerPage
+  //       );
+  //       setMakes(pagination.item);
+  //       setCurrentPage(currentPage);
+  //       setTotalPages(pagination.totalPages);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-  const rows = makes.map((item) => (
+  //   fetchData();
+  // }, [currentPage]);
+
+  const rows = makesStore.filteredMakes.map((item) => (
     <Table.Tr key={item.name}>
       <Table.Td>
         <Group gap="sm">
@@ -115,12 +121,14 @@ export default function Makes() {
         justify={{ sm: "center" }}
       >
         <Pagination
-          value={currentPage}
-          onChange={setCurrentPage}
+          value={makesStore.currentPage}
+          onChange={(value) => makesStore.setCurrentPage(value)}
           total={5}
           radius="md"
         />
       </Flex>
     </Table.ScrollContainer>
   );
-}
+});
+
+export default Makes;

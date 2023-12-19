@@ -19,8 +19,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import VehicleMakeService from "@/services/VehicleMakeService";
 import VehicleModelService from "@/services/VehicleModelService";
-import { FilterProvider, useFilter } from "../../context/FilterContext";
-import FilterBar from "@/components/filter-bar/FilterBar";
+import { FilterProvider } from "@/context/FilterContext2";
+import makesStore from "@/stores/MakesStore";
 
 export default function Cars() {
   const [makes, setMakes] = useState([]);
@@ -35,6 +35,7 @@ export default function Cars() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const [totalPages, setTotalPages] = useState(3);
+  console.log(models, "model iz cars");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,6 +50,10 @@ export default function Cars() {
 
     fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   makesStore.fetchMakes();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,15 +95,20 @@ export default function Cars() {
         const pagination = await VehicleMakeService.pagination(
           currentPage,
           itemsPerPage
+          // makesStore.currentPage,
+          // makesStore.itemsPerPage
         );
         console.log(pagination, "pagination");
         // setMakes(pagination.item);
         setFilteredMakes(pagination.item);
         setCurrentPage(currentPage);
         setTotalPages(pagination.totalPages);
+        // makeStore.setCurrentPage(currentPage);
+        // makeStore.setTotalPages(pagination.totalPages);
       } catch (error) {
         console.error("Error fetching makes data:", error);
         setCurrentPage(pageNumber);
+        // makeStore.setCurrentPage(pageNumber);
       }
     };
     fetchData();
@@ -125,36 +135,36 @@ export default function Cars() {
     fetchModels();
   }, [selectedMake, selectedModel]);
 
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
+  useEffect(() => {
+    handleSearch();
+  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
 
-  // const handleSearch = () => {
-  //   let filteredItems = models;
-  //   if (selectedMake) {
-  //     filteredItems = models.filter(
-  //       (model) =>
-  //         (!selectedFuelType ||
-  //           model.fuel_type === fuelTypes[selectedFuelType]) &&
-  //         (!selectedMake || model.makeId === selectedMake) &&
-  //         (!selectedModel || model.id === selectedModel) &&
-  //         (!selectedWheelType ||
-  //           model.wheel_type === wheelTypes[selectedWheelType])
-  //     );
-  //   } else if (models && (selectedFuelType || selectedWheelType)) {
-  //     filteredItems = models.filter(
-  //       (model) =>
-  //         (!selectedFuelType ||
-  //           model.fuel_type === fuelTypes[selectedFuelType]) &&
-  //         (!selectedWheelType ||
-  //           model.wheel_type === wheelTypes[selectedWheelType])
-  //     );
-  //   } else {
-  //     filteredItems = makes;
-  //   }
+  const handleSearch = () => {
+    let filteredItems = models;
+    if (selectedMake) {
+      filteredItems = models.filter(
+        (model) =>
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedMake || model.makeId === selectedMake) &&
+          (!selectedModel || model.id === selectedModel) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
+      );
+    } else if (models && (selectedFuelType || selectedWheelType)) {
+      filteredItems = models.filter(
+        (model) =>
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
+      );
+    } else {
+      filteredItems = makes;
+    }
 
-  //   setFilteredMakes(filteredItems);
-  // };
+    setFilteredMakes(filteredItems);
+  };
 
   const renderCards = (make) => {
     const { name, id } = make;
@@ -199,7 +209,7 @@ export default function Cars() {
 
   return (
     <FilterProvider>
-      {/* <Flex
+      <Flex
         direction={{ base: "column", sm: "row" }}
         gap={{ base: "sm", sm: "lg" }}
         justify={{ sm: "center" }}
@@ -272,17 +282,28 @@ export default function Cars() {
         <Link href="/models/create">
           <Button style={{ marginTop: 25 }}>New model</Button>
         </Link>
-      </Flex> */}
+      </Flex>
 
       <Space h="xl" />
-      <FilterBar
+      {/* <FilterBar
         // onChange={(value) => console.log(value)}
         makes={makes}
         models={models}
         fuelTypes={fuelTypes}
         wheelTypes={wheelTypes}
         filteredMakes={filteredMakes}
-      ></FilterBar>
+      ></FilterBar> */}
+      {/* <FilterBar2
+        // onChange={}
+        makes={makes}
+        models={models}
+        fuelTypes={fuelTypes}
+        wheelTypes={wheelTypes}
+        selectedMake={selectedMake}
+        selectedModel={selectedModel}
+        selectedFuelType={selectedFuelType}
+        selectedWheelType={selectedWheelType}
+      ></FilterBar2> */}
 
       <Divider my="sm" />
 

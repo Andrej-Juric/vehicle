@@ -20,45 +20,39 @@ export default function FilterBar({
   const [selectedWheelType, setSelectedWheelType] = useState(
     filter.selectedWheelType
   );
-  console.log(filteredMakes);
+  console.log(selectedMake);
+  console.log(selectedModel);
 
   useEffect(() => {
     setSelectedMake(filter.selectedMake);
     setSelectedModel(filter.selectedModel);
     setSelectedFuelType(filter.selectedFuelType);
     setSelectedWheelType(filter.selectedWheelType);
-  }, [
-    filter.selectedMake,
-    filter.selectedModel,
-    filter.selectedFuelType,
-    filter.selectedWheelType,
-  ]);
-  const handleSearch = () => {
-    let filteredItems = filter.models;
+  }, [filter]);
 
-    if (filter.selectedMake) {
-      filteredItems = filter.models.filter(
+  const handleSearch = () => {
+    let filteredItems = models;
+
+    if (selectedMake) {
+      filteredItems = models.filter(
         (model) =>
-          (!filter.selectedFuelType ||
-            model.fuel_type === filter.fuelTypes[filter.selectedFuelType]) &&
-          (!filter.selectedMake || model.makeId === filter.selectedMake) &&
-          (!filter.selectedModel || model.id === filter.selectedModel) &&
-          (!filter.selectedWheelType ||
-            model.wheel_type === filter.wheelTypes[filter.selectedWheelType])
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedMake || model.makeId === selectedMake) &&
+          (!selectedModel || model.id === selectedModel) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
       );
-    } else if (
-      filter.models &&
-      (filter.selectedFuelType || filter.selectedWheelType)
-    ) {
-      filteredItems = filter.models.filter(
+    } else if (models && (selectedFuelType || selectedWheelType)) {
+      filteredItems = models.filter(
         (model) =>
-          (!filter.selectedFuelType ||
-            model.fuel_type === filter.fuelTypes[filter.selectedFuelType]) &&
-          (!filter.selectedWheelType ||
-            model.wheel_type === filter.wheelTypes[filter.selectedWheelType])
+          (!selectedFuelType ||
+            model.fuel_type === fuelTypes[selectedFuelType]) &&
+          (!selectedWheelType ||
+            model.wheel_type === wheelTypes[selectedWheelType])
       );
     } else {
-      filteredItems = filter.makes;
+      filteredItems = makes;
     }
 
     setFilter((prevFilter) => ({
@@ -66,6 +60,10 @@ export default function FilterBar({
       filteredMakes: filteredItems,
     }));
   };
+
+  useEffect(() => {
+    handleSearch();
+  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
 
   return (
     <div>
@@ -75,7 +73,7 @@ export default function FilterBar({
         data={makes.map((make) => ({ label: make.name, value: make.id }))}
         style={{ width: 200 }}
         value={selectedMake}
-        onChange={(value) => setSelectedMake(value)}
+        onChange={setSelectedMake}
         clearable
         searchable
       />
@@ -131,7 +129,12 @@ export default function FilterBar({
         searchable
       />
 
-      <Button onClick={handleSearch} style={{ marginTop: 25 }}>
+      <Button
+        onClick={() => {
+          handleSearch();
+        }}
+        style={{ marginTop: 25 }}
+      >
         Search
       </Button>
       <Link href="/models/create">
