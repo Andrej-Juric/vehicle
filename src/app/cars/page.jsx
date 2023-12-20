@@ -16,154 +16,73 @@ import {
 import { IconEdit } from "@tabler/icons-react";
 import classes from "./index.module.css";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import VehicleMakeService from "@/services/VehicleMakeService";
-import VehicleModelService from "@/services/VehicleModelService";
+import { useEffect } from "react";
 import { FilterProvider } from "@/context/FilterContext2";
+import { observer } from "mobx-react";
 import makesStore from "@/stores/MakesStore";
+import modelsStore from "@/stores/ModelsStore";
 
-export default function Cars() {
-  const [makes, setMakes] = useState([]);
-  const [models, setModels] = useState([]);
-  const [selectedMake, setSelectedMake] = useState(null);
-  const [selectedModel, setSelectedModel] = useState(null);
-  const [filteredMakes, setFilteredMakes] = useState([]);
-  const [fuelTypes, setFuelTypes] = useState([]);
-  const [selectedFuelType, setSelectedFuelType] = useState();
-  const [wheelTypes, setWheelTypes] = useState([]);
-  const [selectedWheelType, setSelectedWheelType] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(4);
-  const [totalPages, setTotalPages] = useState(3);
-  console.log(models, "model iz cars");
-
+const Cars = observer(() => {
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const makeData = await VehicleMakeService.get();
-        setMakes(makeData.item);
-      } catch (error) {
-        console.error("Error fetching makes data:", error);
-      }
-      setFilteredMakes(makeData.item);
-    };
-
-    fetchData();
+    makesStore.fetchMakes();
+    modelsStore.fetchModels();
   }, []);
 
-  // useEffect(() => {
-  //   makesStore.fetchMakes();
-  // }, []);
+  useEffect(() => {
+    makesStore.fetchPaginatedMakes();
+  }, [makesStore.currentPage]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const modelData = await VehicleModelService.get();
-        setModels(modelData.item);
-        if (modelData) {
-          let fuelTyps = [];
-          let wheelTyps = [];
-          modelData.item.forEach((data) => {
-            if (!fuelTyps.includes(data.fuel_type)) {
-              fuelTyps.push(data.fuel_type);
-            }
-
-            if (!wheelTyps.includes(data.wheel_type)) {
-              wheelTyps.push(data.wheel_type);
-            }
-          });
-
-          if (fuelTyps) {
-            setFuelTypes(fuelTyps);
-          }
-
-          if (wheelTyps) {
-            setWheelTypes(wheelTyps);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching makes data:", error);
-      }
-    };
-
-    fetchData();
-  }, [makes]);
+    modelsStore.setFuelAndWheelTypes(modelsStore.models);
+  }, [modelsStore.models]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const pagination = await VehicleMakeService.pagination(
-          currentPage,
-          itemsPerPage
-          // makesStore.currentPage,
-          // makesStore.itemsPerPage
-        );
-        console.log(pagination, "pagination");
-        // setMakes(pagination.item);
-        setFilteredMakes(pagination.item);
-        setCurrentPage(currentPage);
-        setTotalPages(pagination.totalPages);
-        // makeStore.setCurrentPage(currentPage);
-        // makeStore.setTotalPages(pagination.totalPages);
-      } catch (error) {
-        console.error("Error fetching makes data:", error);
-        setCurrentPage(pageNumber);
-        // makeStore.setCurrentPage(pageNumber);
-      }
-    };
-    fetchData();
-  }, [currentPage]);
-
-  useEffect(() => {
-    const fetchModels = async () => {
-      try {
-        if (selectedMake) {
-          console.log(selectedMake, "selectedMake");
-
-          const modelData = await VehicleModelService.search(selectedMake);
-          setModels(modelData.item);
-          console.log(models);
-        } else {
-          const modelData = await VehicleModelService.get();
-          setModels(modelData.item);
-        }
-      } catch (error) {
-        console.error("Error fetching models data:", error);
-      }
-    };
-
-    fetchModels();
-  }, [selectedMake, selectedModel]);
+    modelsStore.fetchModels(makesStore.selectedMake);
+  }, [makesStore.selectedMake]);
 
   useEffect(() => {
     handleSearch();
-  }, [selectedMake, selectedModel, selectedFuelType, selectedWheelType]);
+  }, [
+    makesStore.selectedMake,
+    modelsStore.selectedModel,
+    modelsStore.selectedFuelType,
+    modelsStore.selectedWheelType,
+  ]);
 
   const handleSearch = () => {
-    let filteredItems = models;
-    if (selectedMake) {
-      filteredItems = models.filter(
+    let filteredItems = modelsStore.models;
+    if (makesStore.selectedMake) {
+      filteredItems = modelsStore.models.filter(
         (model) =>
-          (!selectedFuelType ||
-            model.fuel_type === fuelTypes[selectedFuelType]) &&
-          (!selectedMake || model.makeId === selectedMake) &&
-          (!selectedModel || model.id === selectedModel) &&
-          (!selectedWheelType ||
-            model.wheel_type === wheelTypes[selectedWheelType])
+          (!modelsStore.selectedFuelType ||
+            model.fuel_type ===
+              modelsStore.fuelTypes[modelsStore.selectedFuelType]) &&
+          (!makesStore.selectedMake ||
+            model.makeId === makesStore.selectedMake) &&
+          (!modelsStore.selectedModel ||
+            model.id === modelsStore.selectedModel) &&
+          (!modelsStore.selectedWheelType ||
+            model.wheel_type ===
+              modelsStore.wheelTypes[modelsStore.selectedWheelType])
       );
-    } else if (models && (selectedFuelType || selectedWheelType)) {
-      filteredItems = models.filter(
+    } else if (
+      modelsStore.models &&
+      (modelsStore.selectedFuelType || modelsStore.selectedWheelType)
+    ) {
+      filteredItems = modelsStore.models.filter(
         (model) =>
-          (!selectedFuelType ||
-            model.fuel_type === fuelTypes[selectedFuelType]) &&
-          (!selectedWheelType ||
-            model.wheel_type === wheelTypes[selectedWheelType])
+          (!modelsStore.selectedFuelType ||
+            model.fuel_type ===
+              modelsStore.fuelTypes[modelsStore.selectedFuelType]) &&
+          (!modelsStore.selectedWheelType ||
+            model.wheel_type ===
+              modelsStore.wheelTypes[modelsStore.selectedWheelType])
       );
     } else {
-      filteredItems = makes;
+      filteredItems = makesStore.makes;
     }
 
-    setFilteredMakes(filteredItems);
+    makesStore.setFilteredMakes(filteredItems);
   };
 
   const renderCards = (make) => {
@@ -189,15 +108,15 @@ export default function Cars() {
         </Card.Section>
 
         <Group mt="xs">
-          <Link href={`/cars/${selectedModel || make.id}`}>
+          <Link href={`/cars/${modelsStore.selectedModel || make.id}`}>
             <Button radius="md" style={{ flex: 1 }}>
               Show details
             </Button>
           </Link>
 
-          {selectedMake && (
+          {makesStore.selectedMake && (
             <ActionIcon variant="default" radius="md" size={36}>
-              <Link href={`/cars/${selectedModel || make.id}/edit`}>
+              <Link href={`/cars/${modelsStore.selectedModel || make.id}/edit`}>
                 <IconEdit className={classes.like} stroke={1.5} />
               </Link>
             </ActionIcon>
@@ -218,10 +137,13 @@ export default function Cars() {
         <Select
           label="Choose makes"
           placeholder="Pick car"
-          data={makes.map((make) => ({ label: make.name, value: make.id }))}
+          data={makesStore.makes.map((make) => ({
+            label: make.name,
+            value: make.id,
+          }))}
           style={{ width: 200 }}
-          value={selectedMake}
-          onChange={setSelectedMake}
+          value={makesStore.selectedMake}
+          onChange={(value) => makesStore.setSelectedMake(value)}
           clearable
           searchable
         />
@@ -229,18 +151,22 @@ export default function Cars() {
           label="Choose models"
           placeholder="Pick model"
           data={
-            models &&
-            selectedMake &&
-            models
-              .filter((model) => !selectedMake || model.makeId === selectedMake)
+            modelsStore.models &&
+            makesStore.selectedMake &&
+            modelsStore.models
+              .filter(
+                (model) =>
+                  !makesStore.selectedMake ||
+                  model.makeId === makesStore.selectedMake
+              )
               .map((model) => ({
                 label: model.name,
                 value: model.id,
               }))
           }
           style={{ width: 200 }}
-          value={selectedModel}
-          onChange={setSelectedModel}
+          value={modelsStore.selectedModel}
+          onChange={(value) => modelsStore.setSelectedModel(value)}
           clearable
           searchable
         />
@@ -248,15 +174,15 @@ export default function Cars() {
           label="Engine/Fuel type"
           placeholder="Pick model"
           data={
-            fuelTypes &&
-            fuelTypes.map((model, index) => ({
+            modelsStore.fuelTypes &&
+            modelsStore.fuelTypes.map((model, index) => ({
               label: model,
               value: String(index),
             }))
           }
           style={{ width: 200 }}
-          value={selectedFuelType}
-          onChange={setSelectedFuelType}
+          value={modelsStore.selectedFuelType}
+          onChange={(value) => modelsStore.setSelectedFuelType(value)}
           clearable
           searchable
         />
@@ -264,16 +190,17 @@ export default function Cars() {
           label="Wheel type"
           placeholder="Pick model"
           data={
-            wheelTypes &&
-            wheelTypes.map((model, index) => ({
+            modelsStore.wheelTypes &&
+            modelsStore.wheelTypes.map((model, index) => ({
               label: model,
               value: String(index),
             }))
           }
           style={{ width: 200 }}
-          value={selectedWheelType}
-          onChange={setSelectedWheelType}
+          value={modelsStore.selectedWheelType}
+          onChange={(value) => modelsStore.setSelectedWheelType(value)}
           clearable
+          searchable
         />
 
         <Button onClick={handleSearch} style={{ marginTop: 25 }}>
@@ -285,31 +212,12 @@ export default function Cars() {
       </Flex>
 
       <Space h="xl" />
-      {/* <FilterBar
-        // onChange={(value) => console.log(value)}
-        makes={makes}
-        models={models}
-        fuelTypes={fuelTypes}
-        wheelTypes={wheelTypes}
-        filteredMakes={filteredMakes}
-      ></FilterBar> */}
-      {/* <FilterBar2
-        // onChange={}
-        makes={makes}
-        models={models}
-        fuelTypes={fuelTypes}
-        wheelTypes={wheelTypes}
-        selectedMake={selectedMake}
-        selectedModel={selectedModel}
-        selectedFuelType={selectedFuelType}
-        selectedWheelType={selectedWheelType}
-      ></FilterBar2> */}
 
       <Divider my="sm" />
 
       <Grid style={{ padding: 20 }}>
-        {filteredMakes &&
-          filteredMakes.map((make, index) => (
+        {makesStore.filteredMakes &&
+          makesStore.filteredMakes.map((make, index) => (
             <Grid.Col span={{ base: 12, md: 6, lg: 3 }} key={index}>
               {renderCards(make)}
             </Grid.Col>
@@ -324,12 +232,14 @@ export default function Cars() {
         justify={{ sm: "center" }}
       >
         <Pagination
-          value={currentPage}
-          onChange={setCurrentPage}
+          value={makesStore.currentPage}
+          onChange={(value) => makesStore.setCurrentPage(value)}
           total={5}
           radius="md"
         />
       </Flex>
     </FilterProvider>
   );
-}
+});
+
+export default Cars;

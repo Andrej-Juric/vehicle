@@ -1,29 +1,100 @@
-// stores/MakesStore.js
 import { makeObservable, observable, action } from "mobx";
+import VehicleModelService from "@/services/VehicleModelService";
+import makesStore from "@/stores/MakesStore";
 
 class ModelsStore {
   models = [];
+  selectedModel = null;
+  fuelTypes = [];
+  selectedFuelType = null;
+  wheelTypes = [];
+  selectedWheelType = null;
 
   constructor() {
     makeObservable(this, {
       models: observable,
+      selectedModel: observable,
+      fuelTypes: observable,
+      selectedFuelType: observable,
+      wheelTypes: observable,
+      selectedWheelType: observable,
+      fetchModels: action,
       setModels: action,
+      setSelectedModel: action,
+      setFuelTypes: action,
+      setSelectedFuelType: action,
+      setWheelTypes: action,
+      setSelectedWheelType: action,
     });
   }
 
-  async fetchMakes() {
+  async fetchModels() {
     try {
-      const response = await fetch("");
-      const data = await response.json();
-
-      this.setMakes(data);
+      const modelData = await VehicleModelService.get();
+      this.setModels(modelData.item);
+      this.setFuelAndWheelTypes(modelData.item);
     } catch (error) {
-      console.error("Error fetching makes:", error);
+      console.error("Error fetching models:", error);
+    }
+  }
+  async fetchModels() {
+    try {
+      if (makesStore.selectedMake) {
+        console.log(makesStore.selectedMake, "selectedMake");
+
+        const modelData = await VehicleModelService.search(
+          makesStore.selectedMake
+        );
+        this.setModels(modelData.item);
+      } else {
+        const modelData = await VehicleModelService.get();
+        this.setModels(modelData.item);
+      }
+    } catch (error) {
+      console.error("Error fetching models data:", error);
     }
   }
 
   setModels(models) {
     this.models = models;
+  }
+
+  setSelectedModel(model) {
+    this.selectedModel = model;
+  }
+
+  setFuelAndWheelTypes(models) {
+    const fuelTypes = [];
+    const wheelTypes = [];
+
+    models.forEach((data) => {
+      if (!fuelTypes.includes(data.fuel_type)) {
+        fuelTypes.push(data.fuel_type);
+      }
+
+      if (!wheelTypes.includes(data.wheel_type)) {
+        wheelTypes.push(data.wheel_type);
+      }
+    });
+
+    this.setFuelTypes(fuelTypes);
+    this.setWheelTypes(wheelTypes);
+  }
+
+  setFuelTypes(fuelTypes) {
+    this.fuelTypes = fuelTypes;
+  }
+
+  setSelectedFuelType(fuelType) {
+    this.selectedFuelType = fuelType;
+  }
+
+  setWheelTypes(wheelTypes) {
+    this.wheelTypes = wheelTypes;
+  }
+
+  setSelectedWheelType(wheelType) {
+    this.selectedWheelType = wheelType;
   }
 }
 

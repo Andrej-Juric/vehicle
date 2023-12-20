@@ -1,7 +1,6 @@
 "use client";
-import VehicleMakeService from "@/services/VehicleMakeService";
 import makesStore from "@/stores/MakesStore";
-import { useObserver, observer } from "mobx-react";
+import { observer } from "mobx-react";
 import {
   Avatar,
   Table,
@@ -17,7 +16,7 @@ import {
 } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 const Makes = observer(() => {
   useEffect(() => {

@@ -4,6 +4,7 @@ import VehicleMakeService from "@/services/VehicleMakeService";
 class MakesStore {
   makes = [];
   filteredMakes = [];
+  selectedMake = null;
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 5;
@@ -11,10 +12,12 @@ class MakesStore {
   constructor() {
     makeObservable(this, {
       makes: observable,
+      selectedMake: observable,
       filteredMakes: observable,
       currentPage: observable,
       itemsPerPage: observable,
       totalPages: observable,
+      setSelectedMake: action,
       fetchMakes: action,
       fetchPaginatedMakes: action,
       setMakes: action,
@@ -24,12 +27,10 @@ class MakesStore {
       setTotalPages: action,
     });
   }
-
   async fetchMakes() {
     try {
       const makeData = await VehicleMakeService.get();
       this.setMakes(makeData.item);
-      this.setFilteredMakes(makeData.item);
     } catch (error) {
       console.error("Error fetching makes:", error);
     }
@@ -42,7 +43,6 @@ class MakesStore {
         this.itemsPerPage
       );
       console.log(makeData, "fetchPaginatedMakes");
-      this.setMakes(makeData.item);
       this.setFilteredMakes(makeData.item);
       this.setTotalPages(makeData.totalPages);
     } catch (error) {
@@ -68,6 +68,10 @@ class MakesStore {
 
   setTotalPages(totalPages) {
     this.totalPages = totalPages;
+  }
+
+  setSelectedMake(selectedMake) {
+    this.selectedMake = selectedMake;
   }
 }
 
