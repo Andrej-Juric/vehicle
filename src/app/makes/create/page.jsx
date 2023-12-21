@@ -1,72 +1,21 @@
 "use client";
 import { Box, Button, Flex, Group, TextInput, Title } from "@mantine/core";
-import React, { useEffect, useState } from "react";
-import MobxReactForm from "mobx-react-form";
-import dvr from "mobx-react-form/lib/validators/DVR";
-import validatorjs from "validatorjs";
+import React from "react";
 import Link from "next/link";
-import VehicleMakeService from "@/services/VehicleMakeService";
+import makesStore from "@/stores/MakesStore";
+import { observer } from "mobx-react";
+import createForm from "./form";
 
-// const plugins = {
-//   dvr: dvr(validatorjs),
-// };
-
-// const hooks = {
-//   onSuccess(form) {
-//     alert("Form is valid! Send the request here.");
-
-//     console.log("Form Values!", form.values());
-//   },
-//   onError(form) {
-//     alert("Form has errors!");
-
-//     console.log("All form errors", form.errors());
-//   },
-// };
-
-// const fields = [
-//   {
-//     name: "email",
-//     label: "Email",
-//     placeholder: "Insert Email",
-//     rules: "required|email|string|between:5,25",
-//   },
-//   {
-//     name: "password",
-//     label: "Password",
-//     placeholder: "Insert Password",
-//     rules: "required|string|between:5,25",
-//     type: "password",
-//   },
-// ];
-
-// const myForm = new MobxReactForm({ fields }, { plugins, hooks });
-
-export default function CreateMake() {
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
-  const [abrv, setAbrv] = useState("");
+const CreateMake = observer(() => {
+  const form = createForm;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    form.onSubmit();
+  };
 
-    try {
-      if (!name || !abrv) {
-        console.error("treba sve ispunit");
-        return;
-      }
-
-      const makeData = {
-        abbreviation: abrv,
-        name: name,
-      };
-
-      await VehicleMakeService.create({ makeData });
-
-      console.log("uspjelo");
-    } catch (error) {
-      console.error("error", error);
-    }
+  const handleReset = () => {
+    form.onReset();
   };
 
   return (
@@ -81,28 +30,36 @@ export default function CreateMake() {
     >
       <Title order={1}>Create new make</Title>
       <Box>
-        <TextInput
-          label="Name"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <TextInput
-          mt="md"
-          label="Abbreviation"
-          placeholder="Abrv"
-          value={abrv}
-          onChange={(e) => setAbrv(e.target.value)}
-        />
-        <Group justify="center" mt="xl">
-          <Button onClick={handleSubmit} type="submit" color="teal">
-            Save
-          </Button>
-          <Link href="/makes">
-            <Button color="red">Cancel</Button>
-          </Link>
-        </Group>
+        <form onSubmit={handleSubmit}>
+          <TextInput
+            label={form.$("name").label}
+            placeholder={form.$("name").placeholder}
+            value={form.$("name").value}
+            onChange={(e) => form.$("name").set(e.target.value)}
+            error={form.$("name").error}
+          />
+          <TextInput
+            label={form.$("abrv").label}
+            placeholder={form.$("abrv").placeholder}
+            value={form.$("abrv").value}
+            onChange={(e) => form.$("abrv").set(e.target.value)}
+            error={form.$("abrv").error}
+          />
+          <Group justify="center" mt="xl">
+            <Button onClick={handleSubmit} type="submit" color="teal">
+              Save
+            </Button>
+            <Button onClick={handleReset} type="button" color="teal">
+              Reset
+            </Button>
+            <Link href="/makes">
+              <Button color="red">Cancel</Button>
+            </Link>
+          </Group>
+        </form>
       </Box>
     </Flex>
   );
-}
+});
+
+export default CreateMake;

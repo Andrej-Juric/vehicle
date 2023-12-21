@@ -50,6 +50,15 @@ class MakesStore {
     }
   }
 
+  async createMakes({ name, abrv }) {
+    try {
+      const makeData = { abbreviation: abrv, name: name };
+      const createMake = await VehicleMakeService.create(makeData);
+    } catch (error) {
+      console.error("Error creating makes:", error);
+    }
+  }
+
   setMakes(makes) {
     this.makes = makes;
   }
