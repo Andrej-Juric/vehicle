@@ -20,7 +20,7 @@ export default class VehicleMakeService {
     return await httpClient.post(this.apiUrl, makeData);
   }
 
-  async update(id, makeData) {
+  static async update(id, makeData) {
     return await httpClient.put(`${this.apiUrl}/${id}`, makeData);
   }
 

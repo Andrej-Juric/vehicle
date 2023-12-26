@@ -31,6 +31,7 @@ class HttpClient {
   }
 
   async put(url, makeData) {
+    console.log(url, makeData, "httpclient url i makeData");
     try {
       const response = await fetch(url, {
         method: "PUT",

@@ -8,6 +8,7 @@ class MakesStore {
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 5;
+  editMakeId = null;
 
   constructor() {
     makeObservable(this, {
@@ -17,6 +18,7 @@ class MakesStore {
       currentPage: observable,
       itemsPerPage: observable,
       totalPages: observable,
+      editMakeId: observable,
       setSelectedMake: action,
       fetchMakes: action,
       fetchPaginatedMakes: action,
@@ -25,6 +27,7 @@ class MakesStore {
       setCurrentPage: action,
       setItemsPerPage: action,
       setTotalPages: action,
+      setEditMakeId: action,
     });
   }
   async fetchMakes() {
@@ -58,6 +61,14 @@ class MakesStore {
       console.error("Error creating makes:", error);
     }
   }
+  async editMakes({ name, abrv }) {
+    try {
+      const makeData = { abbreviation: abrv, name: name };
+      await VehicleMakeService.update(this.editMakeId, makeData);
+    } catch (error) {
+      console.error("Error editing makes:", error);
+    }
+  }
 
   setMakes(makes) {
     this.makes = makes;
@@ -81,6 +92,10 @@ class MakesStore {
 
   setSelectedMake(selectedMake) {
     this.selectedMake = selectedMake;
+  }
+
+  setEditMakeId(id) {
+    this.editMakeId = id;
   }
 }
 

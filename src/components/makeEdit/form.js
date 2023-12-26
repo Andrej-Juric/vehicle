@@ -1,9 +1,14 @@
-import { Form } from "mobx-react-form";
 import makesStore from "@/stores/MakesStore";
+import { Form } from "mobx-react-form";
 import dvr from "mobx-react-form/lib/validators/DVR";
 import validatorjs from "validatorjs";
 
-class CreateMakeForm extends Form {
+class EditMakeForm extends Form {
+  constructor(makeId) {
+    super();
+    this.makeId = makeId;
+  }
+
   plugins() {
     return {
       dvr: dvr(validatorjs),
@@ -16,14 +21,14 @@ class CreateMakeForm extends Form {
         {
           name: "name",
           label: "Name",
-          placeholder: "Add vehicle name",
-          rules: "required|string|between:5,25",
+          placeholder: "Name",
+          rules: "required|string|between:4,25",
           value: "",
         },
         {
           name: "abrv",
           label: "Abbreviation",
-          placeholder: "Add vehicle abbreviation",
+          placeholder: "Abrv",
           rules: "required|string|between:3,10",
           value: "",
         },
@@ -33,15 +38,14 @@ class CreateMakeForm extends Form {
 
   hooks() {
     return {
-      onSuccess(form) {
+      onSuccess: (form) => {
+        console.log(this.makeId, "this.makeId u form.js");
         alert("Form is valid! Send the request here.");
         const { name, abrv } = form.values();
-        makesStore.createMakes({ name, abrv });
+        makesStore.editMakes({ id: this.makeId, name, abrv });
         console.log("Form Values!", form.values());
-
-        makesStore.fetchMakes();
       },
-      onError(form) {
+      onError: (form) => {
         alert("Form has errors!");
         console.log("All form errors", form.errors());
       },
@@ -49,5 +53,5 @@ class CreateMakeForm extends Form {
   }
 }
 
-const createForm = new CreateMakeForm();
-export default createForm;
+const editMakeForm = new EditMakeForm();
+export default editMakeForm;
