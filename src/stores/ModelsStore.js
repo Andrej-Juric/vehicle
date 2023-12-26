@@ -55,6 +55,21 @@ class ModelsStore {
     }
   }
 
+  async createModels({ name, abrv, fuelType, wheelType, makeId }) {
+    try {
+      const modelData = {
+        abbreviation: abrv,
+        name: name,
+        fuel_type: fuelType,
+        wheel_type: wheelType,
+        makeId: makeId,
+      };
+      const createModel = await VehicleModelService.create(modelData);
+    } catch (error) {
+      console.error("Error creating models:", error);
+    }
+  }
+
   setModels(models) {
     this.models = models;
   }
