@@ -12,8 +12,9 @@ import {
   Divider,
   Pagination,
   Grid,
+  rem,
 } from "@mantine/core";
-import { IconEdit } from "@tabler/icons-react";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
 import classes from "./index.module.css";
 import Link from "next/link";
 import { useEffect } from "react";
@@ -85,6 +86,10 @@ const Cars = observer(() => {
     makesStore.setFilteredMakes(filteredItems);
   };
 
+  const handleDelete = (id) => {
+    modelsStore.deleteModel(id);
+  };
+
   const renderCards = (make) => {
     const { name, id } = make;
 
@@ -121,6 +126,18 @@ const Cars = observer(() => {
               >
                 <IconEdit className={classes.like} stroke={1.5} />
               </Link>
+            </ActionIcon>
+          )}
+          {makesStore.selectedMake && (
+            <ActionIcon
+              onClick={() => handleDelete(id)}
+              variant="subtle"
+              color="red"
+            >
+              <IconTrash
+                style={{ width: rem(16), height: rem(16) }}
+                stroke={1.5}
+              />
             </ActionIcon>
           )}
         </Group>

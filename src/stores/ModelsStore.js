@@ -88,6 +88,14 @@ class ModelsStore {
     }
   }
 
+  async deleteModel(id) {
+    try {
+      await VehicleModelService.delete(id);
+    } catch (error) {
+      console.error("Error editing makes:", error);
+    }
+  }
+
   setModels(models) {
     this.models = models;
   }
