@@ -24,7 +24,7 @@ export default class VehicleMakeService {
     return await httpClient.put(`${this.apiUrl}/${id}`, makeData);
   }
 
-  async delete(id) {
+  static async delete(id) {
     return await httpClient.delete(`${this.apiUrl}/${id}`);
   }
 }

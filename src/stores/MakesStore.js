@@ -28,6 +28,7 @@ class MakesStore {
       setItemsPerPage: action,
       setTotalPages: action,
       setEditMakeId: action,
+      deleteMake: action,
     });
   }
   async fetchMakes() {
@@ -65,6 +66,14 @@ class MakesStore {
     try {
       const makeData = { abbreviation: abrv, name: name };
       await VehicleMakeService.update(this.editMakeId, makeData);
+    } catch (error) {
+      console.error("Error editing makes:", error);
+    }
+  }
+
+  async deleteMake(id) {
+    try {
+      await VehicleMakeService.delete(id);
     } catch (error) {
       console.error("Error editing makes:", error);
     }

@@ -23,6 +23,10 @@ const Makes = observer(() => {
     makesStore.fetchPaginatedMakes();
   }, [makesStore.currentPage]);
 
+  const handleDelete = (id) => {
+    makesStore.deleteMake(id);
+  };
+
   const rows = makesStore.filteredMakes.map((item) => (
     <Table.Tr key={item.name}>
       <Table.Td>
@@ -50,7 +54,11 @@ const Makes = observer(() => {
               />
             </Link>
           </ActionIcon>
-          <ActionIcon variant="subtle" color="red">
+          <ActionIcon
+            onClick={() => handleDelete(item.id)}
+            variant="subtle"
+            color="red"
+          >
             <IconTrash
               style={{ width: rem(16), height: rem(16) }}
               stroke={1.5}

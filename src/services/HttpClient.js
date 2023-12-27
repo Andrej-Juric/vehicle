@@ -53,6 +53,10 @@ class HttpClient {
     try {
       const response = await fetch(url, {
         method: "DELETE",
+        headers: {
+          "X-BAASIC-API-KEY": "sata",
+          "Content-Type": "application/json",
+        },
       });
       this.checkResponseStatus(response);
       return await response.json();
