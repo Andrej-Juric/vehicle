@@ -4,8 +4,6 @@ import "@mantine/core/styles.css";
 import Header from "@/components/templates/header";
 import Footer from "@/components/templates/footer";
 
-// import "./globals.css";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {

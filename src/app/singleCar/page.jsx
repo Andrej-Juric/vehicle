@@ -1,11 +1,5 @@
 "use client";
 import { Card, Text, Group, Center, Button, Flex } from "@mantine/core";
-import {
-  IconGasStation,
-  IconGauge,
-  IconManualGearbox,
-  IconUsers,
-} from "@tabler/icons-react";
 import classes from "./index.module.css";
 import { useParams } from "next/navigation";
 import makesStore from "@/stores/MakesStore";
@@ -15,7 +9,6 @@ import modelsStore from "@/stores/ModelsStore";
 
 const SingleCar = observer(() => {
   const { id } = useParams();
-  console.log(id, "id u singleCar");
 
   useEffect(() => {
     makesStore.fetchMakeById(id);
@@ -27,10 +20,6 @@ const SingleCar = observer(() => {
 
   const selectedMake = makesStore.selectedMake;
   const selectedModel = modelsStore.selectedModel;
-  console.log(selectedModel);
-  // console.log(makesStore.selectedMake, "makestore.selectedmake u single car");
-  // console.log(selectedMake, "selectedMake u single car");
-
   return (
     <Flex
       key={selectedMake ? selectedMake.id : "loading"}
