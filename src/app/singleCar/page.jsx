@@ -6,6 +6,7 @@ import makesStore from "@/stores/MakesStore";
 import { useEffect } from "react";
 import { observer } from "mobx-react";
 import modelsStore from "@/stores/ModelsStore";
+import Link from "next/link";
 
 const SingleCar = observer(() => {
   const { id } = useParams();
@@ -73,6 +74,9 @@ const SingleCar = observer(() => {
           <Group gap={30}>
             <Button radius="xl">Rent now</Button>
           </Group>
+          <Link href="/cars">
+            <Button color="red">Cancel</Button>
+          </Link>
         </Card.Section>
       </Card>
     </Flex>

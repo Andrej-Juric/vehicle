@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Group, TextInput, Title } from "@mantine/core";
-import React, { useEffect } from "react";
+import React from "react";
 import { observer } from "mobx-react";
 import editMakeForm from "./form";
 import Link from "next/link.js";
@@ -8,7 +8,7 @@ import makesStore from "@/stores/MakesStore";
 const MakesEdit = observer(() => {
   const form = editMakeForm;
   const makeId = makesStore.editMakeId;
-  console.log(makeId, "makeId iz makesStore.editMakeId iz MakesEdit");
+  // console.log(makeId, "makeId iz makesStore.editMakeId iz MakesEdit");
 
   const handleSubmit = async (e) => {
     e.preventDefault();

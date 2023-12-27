@@ -18,7 +18,6 @@ import { IconEdit, IconTrash } from "@tabler/icons-react";
 import classes from "./index.module.css";
 import Link from "next/link";
 import { useEffect } from "react";
-import { FilterProvider } from "@/context/FilterContext2";
 import { observer } from "mobx-react";
 import makesStore from "@/stores/MakesStore";
 import modelsStore from "@/stores/ModelsStore";
@@ -146,7 +145,7 @@ const Cars = observer(() => {
   };
 
   return (
-    <FilterProvider>
+    <>
       <Flex
         direction={{ base: "column", sm: "row" }}
         gap={{ base: "sm", sm: "lg" }}
@@ -257,7 +256,7 @@ const Cars = observer(() => {
           radius="md"
         />
       </Flex>
-    </FilterProvider>
+    </>
   );
 });
 
