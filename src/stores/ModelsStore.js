@@ -9,6 +9,7 @@ class ModelsStore {
   selectedFuelType = null;
   wheelTypes = [];
   selectedWheelType = null;
+  editModelId = null;
 
   constructor() {
     makeObservable(this, {
@@ -18,6 +19,7 @@ class ModelsStore {
       selectedFuelType: observable,
       wheelTypes: observable,
       selectedWheelType: observable,
+      editModelId: observable,
       fetchModels: action,
       setModels: action,
       setSelectedModel: action,
@@ -25,6 +27,7 @@ class ModelsStore {
       setSelectedFuelType: action,
       setWheelTypes: action,
       setSelectedWheelType: action,
+      setEditModelId: action,
     });
   }
 
@@ -70,6 +73,21 @@ class ModelsStore {
     }
   }
 
+  async editModels({ name, abrv, wheelType, fuelType, makeId }) {
+    try {
+      const makeData = {
+        abbreviation: abrv,
+        name: name,
+        fuel_type: fuelType,
+        wheel_type: wheelType,
+        makeId: makeId,
+      };
+      await VehicleModelService.update(this.editModelId, makeData);
+    } catch (error) {
+      console.error("Error editing makes:", error);
+    }
+  }
+
   setModels(models) {
     this.models = models;
   }
@@ -110,6 +128,10 @@ class ModelsStore {
 
   setSelectedWheelType(wheelType) {
     this.selectedWheelType = wheelType;
+  }
+
+  setEditModelId(id) {
+    this.editModelId = id;
   }
 }
 

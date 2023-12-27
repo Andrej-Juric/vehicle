@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Group, TextInput, Title } from "@mantine/core";
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react";
 import editMakeForm from "./form";
 import Link from "next/link.js";

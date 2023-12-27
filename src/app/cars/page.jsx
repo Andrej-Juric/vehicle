@@ -108,7 +108,7 @@ const Cars = observer(() => {
         </Card.Section>
 
         <Group mt="xs">
-          <Link href={`/cars/${modelsStore.selectedModel || make.id}`}>
+          <Link href={`/models/${modelsStore.selectedModel || make.id}`}>
             <Button radius="md" style={{ flex: 1 }}>
               Show details
             </Button>
@@ -116,7 +116,9 @@ const Cars = observer(() => {
 
           {makesStore.selectedMake && (
             <ActionIcon variant="default" radius="md" size={36}>
-              <Link href={`/cars/${modelsStore.selectedModel || make.id}/edit`}>
+              <Link
+                href={`/models/${modelsStore.selectedModel || make.id}/edit`}
+              >
                 <IconEdit className={classes.like} stroke={1.5} />
               </Link>
             </ActionIcon>
