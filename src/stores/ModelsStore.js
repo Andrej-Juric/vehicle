@@ -88,6 +88,17 @@ class ModelsStore {
     }
   }
 
+  async fetchModelById(id) {
+    try {
+      console.log(id, "id u fetchModelbyId");
+      const makeData = await VehicleModelService.getById(id);
+      console.log(makeData, "modelData u fetchmakebyid");
+      this.setSelectedModel(makeData);
+    } catch (error) {
+      console.error("Error fetching makes:", error);
+    }
+  }
+
   async deleteModel(id) {
     try {
       await VehicleModelService.delete(id);

@@ -113,7 +113,7 @@ const Cars = observer(() => {
         </Card.Section>
 
         <Group mt="xs">
-          <Link href={`/models/${modelsStore.selectedModel || make.id}`}>
+          <Link href={`/cars/${modelsStore.selectedModel || make.id}`}>
             <Button radius="md" style={{ flex: 1 }}>
               Show details
             </Button>

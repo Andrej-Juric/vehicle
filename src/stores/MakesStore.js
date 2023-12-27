@@ -79,6 +79,17 @@ class MakesStore {
     }
   }
 
+  async fetchMakeById(id) {
+    try {
+      console.log(id, "id u fetchMakeById");
+      const makeData = await VehicleMakeService.getById(id);
+      console.log(makeData, "makedata u fetchmakebyid");
+      this.setSelectedMake(makeData);
+    } catch (error) {
+      console.error("Error fetching makes:", error);
+    }
+  }
+
   setMakes(makes) {
     this.makes = makes;
   }

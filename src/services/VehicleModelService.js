@@ -15,6 +15,9 @@ export default class VehicleModelService {
       `${this.apiUrl}?page=${pageNumber}&rpp=${itemsPerPage}`
     );
   }
+  static async getById(id) {
+    return await httpClient.get(`${this.apiUrl}/${id}`);
+  }
 
   static async create(makeData) {
     return await httpClient.post(this.apiUrl, makeData);
