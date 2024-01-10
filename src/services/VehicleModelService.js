@@ -7,8 +7,8 @@ export default class VehicleModelService {
     console.log(this.apiUrl);
     return await httpClient.get(this.apiUrl);
   }
-  static async search(makeId) {
-    return await httpClient.get(`${this.apiUrl}?searchQuery=${makeId}`);
+  static async search(searchQuery) {
+    return await httpClient.get(`${this.apiUrl}?searchQuery=${searchQuery}`);
   }
   static async pagination(pageNumber, itemsPerPage) {
     return await httpClient.get(

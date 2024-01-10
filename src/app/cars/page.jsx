@@ -21,10 +21,11 @@ import { useEffect } from "react";
 import { observer } from "mobx-react";
 import makesStore from "@/stores/MakesStore";
 import modelsStore from "@/stores/ModelsStore";
+import VehicleModelService from "@/services/VehicleModelService";
 
 const Cars = observer(() => {
   useEffect(() => {
-    makesStore.fetchMakes();
+    // makesStore.fetchMakes();
     modelsStore.fetchModels();
   }, []);
 
@@ -50,39 +51,58 @@ const Cars = observer(() => {
   ]);
 
   const handleSearch = () => {
-    let filteredItems = modelsStore.models;
+    const searchQuery = [];
+
     if (makesStore.selectedMake) {
-      filteredItems = modelsStore.models.filter(
-        (model) =>
-          (!modelsStore.selectedFuelType ||
-            model.fuel_type ===
-              modelsStore.fuelTypes[modelsStore.selectedFuelType]) &&
-          (!makesStore.selectedMake ||
-            model.makeId === makesStore.selectedMake) &&
-          (!modelsStore.selectedModel ||
-            model.id === modelsStore.selectedModel) &&
-          (!modelsStore.selectedWheelType ||
-            model.wheel_type ===
-              modelsStore.wheelTypes[modelsStore.selectedWheelType])
-      );
-    } else if (
-      modelsStore.models &&
-      (modelsStore.selectedFuelType || modelsStore.selectedWheelType)
-    ) {
-      filteredItems = modelsStore.models.filter(
-        (model) =>
-          (!modelsStore.selectedFuelType ||
-            model.fuel_type ===
-              modelsStore.fuelTypes[modelsStore.selectedFuelType]) &&
-          (!modelsStore.selectedWheelType ||
-            model.wheel_type ===
-              modelsStore.wheelTypes[modelsStore.selectedWheelType])
-      );
-    } else {
-      filteredItems = makesStore.makes;
+      searchQuery.push(`${makesStore.selectedMake}`);
     }
 
-    makesStore.setFilteredMakes(filteredItems);
+    if (modelsStore.selectedModel) {
+      searchQuery.push(`${modelsStore.selectedModel}`);
+    }
+
+    if (modelsStore.selectedFuelType) {
+      searchQuery.push(`${modelsStore.selectedFuelType}`);
+    }
+
+    if (modelsStore.selectedWheelType) {
+      searchQuery.push(`${modelsStore.selectedWheelType}`);
+    }
+
+    if (searchQuery.length === 0) {
+      makesStore.setFilteredMakes([]);
+      return;
+    }
+
+    const queryString = searchQuery.join("&");
+
+    VehicleModelService.search(queryString)
+      .then((response) => {
+        const filteredItems = response.item;
+        makesStore.setFilteredMakes(filteredItems);
+        // makesStore.setSelectedMake();
+      })
+      .catch((error) => {
+        console.error("Error in handleSearch:", error);
+      });
+  };
+
+  const handleMakeChange = (value) => {
+    modelsStore.setSelectedModel(null);
+    modelsStore.setSelectedFuelType(null);
+    modelsStore.setSelectedWheelType(null);
+
+    makesStore.setSelectedMake(value);
+
+    makesStore.fetchPaginatedMakes();
+  };
+
+  const handleReset = () => {
+    modelsStore.setSelectedModel(null);
+    modelsStore.setSelectedFuelType(null);
+    modelsStore.setSelectedWheelType(null);
+
+    makesStore.fetchPaginatedMakes();
   };
 
   const handleDelete = (id) => {
@@ -162,6 +182,9 @@ const Cars = observer(() => {
           style={{ width: 200 }}
           value={makesStore.selectedMake}
           onChange={(value) => makesStore.setSelectedMake(value)}
+          // onChange={(value) => {
+          //   handleMakeChange(value);
+          // }}
           clearable
           searchable
         />
@@ -184,7 +207,10 @@ const Cars = observer(() => {
           }
           style={{ width: 200 }}
           value={modelsStore.selectedModel}
-          onChange={(value) => modelsStore.setSelectedModel(value)}
+          // onChange={(value) => modelsStore.setSelectedModel(value)}
+          onChange={(value) => {
+            handleMakeChange(value);
+          }}
           clearable
           searchable
         />
@@ -195,7 +221,8 @@ const Cars = observer(() => {
             modelsStore.fuelTypes &&
             modelsStore.fuelTypes.map((model, index) => ({
               label: model,
-              value: String(index),
+              // value: String(index),
+              value: model,
             }))
           }
           style={{ width: 200 }}
@@ -211,7 +238,8 @@ const Cars = observer(() => {
             modelsStore.wheelTypes &&
             modelsStore.wheelTypes.map((model, index) => ({
               label: model,
-              value: String(index),
+              // value: String(index),
+              value: model,
             }))
           }
           style={{ width: 200 }}
@@ -223,6 +251,9 @@ const Cars = observer(() => {
 
         <Button onClick={handleSearch} style={{ marginTop: 25 }}>
           Search
+        </Button>
+        <Button onClick={handleReset} style={{ marginTop: 25 }}>
+          Reset
         </Button>
         <Link href="/models/create">
           <Button style={{ marginTop: 25 }}>New model</Button>

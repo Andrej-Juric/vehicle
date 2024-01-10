@@ -49,6 +49,7 @@ class MakesStore {
       console.log(makeData, "fetchPaginatedMakes");
       this.setFilteredMakes(makeData.item);
       this.setTotalPages(makeData.totalPages);
+      this.setMakes(makeData.item); // limitirani broj dohvaćenih podataka
     } catch (error) {
       console.error("Error fetching makes:", error);
     }

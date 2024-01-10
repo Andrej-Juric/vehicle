@@ -33,13 +33,21 @@ class ModelsStore {
 
   async fetchModels() {
     try {
-      const modelData = await VehicleModelService.get();
+      let modelData;
+
+      if (makesStore.selectedMake) {
+        modelData = await VehicleModelService.search(makesStore.selectedMake);
+      } else {
+        modelData = await VehicleModelService.get();
+      }
+
       this.setModels(modelData.item);
       this.setFuelAndWheelTypes(modelData.item);
     } catch (error) {
-      console.error("Error fetching models:", error);
+      console.error("Error fetching models data:", error);
     }
   }
+
   async fetchModels() {
     try {
       if (makesStore.selectedMake) {
